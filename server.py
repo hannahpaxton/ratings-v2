@@ -32,7 +32,7 @@ def show_movie(movie_id):
 
     movie = crud.get_movie_by_id(movie_id)
 
-    return render_template('movie_details.html', movie=movie)
+    return render_template('movie_details.html', movie=movie, movie_id=movie_id)
 
 @app.route('/users')
 def all_users():
@@ -67,6 +67,8 @@ def login_user():
     user = crud.get_user_by_password(email,password)
     if user:
         session['user_id'] = user.user_id
+        print(session)
+        flash('Logged in!')
     else: 
         flash('Password does not match. Try again.')
     return redirect('/')
@@ -79,6 +81,14 @@ def show_user(user_id):
 
     return render_template('user_details.html', user=user)
 
+@app.route('/movie_rating', methods=['POST'])
+def rate_movie(movie_id):
+
+    score = request.form.get('rating')
+
+    rating = crud.create_rating(session['user_id'], movie_id, score)
+    
+    return redirect('/')
 
 if __name__ == '__main__':
     connect_to_db(app)
